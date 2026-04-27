@@ -6,6 +6,9 @@
 *.war
 *.ear
 
+# Keep JDBC drivers in repo
+!lib/*.jar
+
 # Build directories
 bin/
 out/
