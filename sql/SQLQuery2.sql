@@ -13,9 +13,9 @@ GO
 -- =============================================
 CREATE TABLE TaiKhoan (
     maTK INT PRIMARY KEY IDENTITY(1,1),
-    username NVARCHAR(50) UNIQUE NOT NULL,
-    password NVARCHAR(255) NOT NULL,
-    role NVARCHAR(30) NOT NULL CHECK (role IN ('QUAN_LY', 'NHAN_VIEN')),
+    [username] NVARCHAR(50) UNIQUE NOT NULL,
+    [password] NVARCHAR(255) NOT NULL,
+    [role] NVARCHAR(30) NOT NULL CHECK ([role] IN ('QUAN_LY', 'NHAN_VIEN')),
     trangThai BIT NOT NULL DEFAULT 1
 );
 
@@ -84,6 +84,17 @@ CREATE TABLE HoaDon (
 );
 
 -- =============================================
+-- NHA CUNG CAP
+-- =============================================
+CREATE TABLE NhaCungCap (
+    maNCC NVARCHAR(10) PRIMARY KEY,
+    tenNCC NVARCHAR(100),
+    sdt NVARCHAR(15),
+    diaChi NVARCHAR(255),
+    email NVARCHAR(100)
+);
+
+-- =============================================
 -- SAN PHAM
 -- =============================================
 CREATE TABLE SanPham (
@@ -113,17 +124,6 @@ CREATE TABLE ChiTietHoaDon (
 );
 
 -- =============================================
--- NHA CUNG CAP
--- =============================================
-CREATE TABLE NhaCungCap (
-    maNCC NVARCHAR(10) PRIMARY KEY,
-    tenNCC NVARCHAR(100),
-    sdt NVARCHAR(15),
-    diaChi NVARCHAR(255),
-    email NVARCHAR(100)
-);
-
--- =============================================
 -- PHIEU NHAP
 -- =============================================
 CREATE TABLE PhieuNhap (
@@ -150,3 +150,12 @@ CREATE TABLE ChiTietPhieuNhap (
     FOREIGN KEY (maPhieu) REFERENCES PhieuNhap(maPhieu) ON DELETE CASCADE,
     FOREIGN KEY (maSP) REFERENCES SanPham(maSP)
 );
+
+-- =============================================
+-- DU LIEU MAU: TAI KHOAN NHAN VIEN VA QUAN LY
+-- =============================================
+INSERT INTO TaiKhoan ([username], [password], [role], trangThai)
+VALUES
+    (N'quanly01', N'123456', N'QUAN_LY', 1),
+    (N'banhang01', N'123456', N'NHAN_VIEN', 1),
+    (N'banhang02', N'123456', N'NHAN_VIEN', 1);
