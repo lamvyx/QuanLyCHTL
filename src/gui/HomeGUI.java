@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -38,6 +39,11 @@ public class HomeGUI extends JFrame {
 
     private final TaiKhoan taiKhoan;
     private final NhanVienDAO nhanVienDAO;
+    private final CardLayout mainLayout = new CardLayout();
+    private final JPanel mainContent = new JPanel(mainLayout);
+    private final NhanVienWorkspacePanel nhanVienWorkspace = new NhanVienWorkspacePanel();
+    private final SanPhamWorkspacePanel sanPhamWorkspace = new SanPhamWorkspacePanel();
+    private final ThongKeWorkspacePanel thongKeWorkspace = new ThongKeWorkspacePanel();
 
     public HomeGUI(TaiKhoan taiKhoan) {
         super("Trang chủ");
@@ -55,13 +61,18 @@ public class HomeGUI extends JFrame {
     private void initUI() {
         setLayout(new BorderLayout());
         add(taoBanner(), BorderLayout.NORTH);
-        add(taoNoiDungChinh(), BorderLayout.CENTER);
+        mainContent.setBackground(BG);
+        mainContent.add(taoNoiDungChinh(), "home");
+        mainContent.add(nhanVienWorkspace, "nhanvien");
+        mainContent.add(sanPhamWorkspace, "sanpham");
+        mainContent.add(thongKeWorkspace, "thongke");
+        add(mainContent, BorderLayout.CENTER);
 
         setJMenuBar(taoMenuBar());
     }
 
     private JPanel taoBanner() {
-        JPanel banner = new JPanel(new BorderLayout());
+        JPanel banner = new JPanel(new BorderLayout(12, 0));
         banner.setBackground(NAVY);
         banner.setBorder(BorderFactory.createEmptyBorder(12, 18, 12, 18));
 
@@ -98,6 +109,7 @@ public class HomeGUI extends JFrame {
         left.add(textBlock, BorderLayout.CENTER);
 
         banner.add(left, BorderLayout.WEST);
+
         return banner;
     }
 
@@ -133,6 +145,49 @@ public class HomeGUI extends JFrame {
         return center;
     }
 
+    private void hienThiTrangChu() {
+        mainLayout.show(mainContent, "home");
+    }
+
+    private void hienThiNhanVien(String section) {
+        mainLayout.show(mainContent, "nhanvien");
+        switch (section) {
+            case "them" -> nhanVienWorkspace.showThemNhanVien();
+            case "traCuu" -> nhanVienWorkspace.showTraCuuNhanVien();
+            case "capNhat" -> nhanVienWorkspace.showCapNhatNhanVien();
+            case "phanQuyen" -> nhanVienWorkspace.showPhanQuyen();
+            case "lapHoaDon" -> nhanVienWorkspace.showLapHoaDon();
+            case "hoaDonDaLap" -> nhanVienWorkspace.showHoaDonDaLap();
+            default -> nhanVienWorkspace.showThemNhanVien();
+        }
+    }
+
+    private void hienThiSanPham(String section) {
+        mainLayout.show(mainContent, "sanpham");
+        switch (section) {
+            case "them" -> sanPhamWorkspace.showThemSanPham();
+            case "traCuu" -> sanPhamWorkspace.showTraCuuSanPham();
+            case "capNhat" -> sanPhamWorkspace.showCapNhatSanPham();
+            case "banNhanh" -> sanPhamWorkspace.showBanHangNhanh();
+            case "tonKho" -> sanPhamWorkspace.showKiemTraTonKho();
+            case "sapHetHan" -> sanPhamWorkspace.showSanPhamSapHetHan();
+            default -> sanPhamWorkspace.showThemSanPham();
+        }
+    }
+
+    private void hienThiThongKe(String section) {
+        mainLayout.show(mainContent, "thongke");
+        switch (section) {
+            case "doanhThuNgay" -> thongKeWorkspace.showDoanhThuNgay();
+            case "doanhThuThang" -> thongKeWorkspace.showDoanhThuThang();
+            case "tonKho" -> thongKeWorkspace.showTonKho();
+            case "banChay" -> thongKeWorkspace.showSanPhamBanChay();
+            case "hoaDon" -> thongKeWorkspace.showHoaDonBan();
+            case "phieuNhap" -> thongKeWorkspace.showPhieuNhap();
+            default -> thongKeWorkspace.showDoanhThuNgay();
+        }
+    }
+
     private JMenuBar taoMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         menuBar.setBackground(Color.WHITE);
@@ -140,21 +195,10 @@ public class HomeGUI extends JFrame {
 
         JButton btnHome = new JButton("Trang chủ");
         styleMenuButton(btnHome, BLUE);
-        btnHome.addActionListener(e -> {
-            dispose();
-            new HomeGUI(taiKhoan).setVisible(true);
-        });
+        btnHome.addActionListener(e -> hienThiTrangChu());
         menuBar.add(btnHome);
 
-        menuBar.add(taoMenuCrudVaTacVu(
-            "Sản phẩm",
-            "Lọc theo mã, tên, loại hàng, giá, tồn kho, nhà cung cấp",
-            new String[] {
-                "Bán hàng nhanh",
-                "Kiểm tra tồn kho",
-                "Xem sản phẩm sắp hết hạn"
-            }
-        ));
+        menuBar.add(taoMenuSanPham());
         menuBar.add(taoMenuCrudVaTacVu(
             "Khách hàng",
             "Lọc theo mã, tên, số điện thoại, loại khách, điểm tích lũy",
@@ -163,15 +207,7 @@ public class HomeGUI extends JFrame {
                 "Cập nhật điểm tích lũy"
             }
         ));
-        menuBar.add(taoMenuCrudVaTacVu(
-            "Nhân viên",
-            "Lọc theo mã, tên, số điện thoại, tài khoản, ngày vào làm",
-            new String[] {
-                "Phân quyền tài khoản",
-                "Lập hóa đơn",
-                "Xem hóa đơn đã lập"
-            }
-        ));
+        menuBar.add(taoMenuNhanVien());
         menuBar.add(taoMenuCrudVaTacVu(
             "Khuyến mãi",
             "Lọc theo mã, kiểu khuyến mãi, thời gian hiệu lực, trạng thái",
@@ -241,16 +277,74 @@ public class HomeGUI extends JFrame {
         return menu;
     }
 
+    private JMenu taoMenuSanPham() {
+        JMenu menuSanPham = new JMenu("Sản phẩm");
+        styleMenu(menuSanPham, BLUE);
+        menuSanPham.add(taoMenuItemSanPham("Thêm sản phẩm", e -> hienThiSanPham("them")));
+        menuSanPham.add(taoMenuItemSanPham("Tra cứu sản phẩm", e -> hienThiSanPham("traCuu")));
+        menuSanPham.add(taoMenuItemSanPham("Cập nhật sản phẩm", e -> hienThiSanPham("capNhat")));
+        menuSanPham.addSeparator();
+        menuSanPham.add(taoMenuItemSanPham("Bán hàng nhanh", e -> hienThiSanPham("banNhanh")));
+        menuSanPham.add(taoMenuItemSanPham("Kiểm tra tồn kho", e -> hienThiSanPham("tonKho")));
+        menuSanPham.add(taoMenuItemSanPham("Xem sản phẩm sắp hết hạn", e -> hienThiSanPham("sapHetHan")));
+        return menuSanPham;
+    }
+
+    private JMenu taoMenuNhanVien() {
+        JMenu menuNhanVien = new JMenu("Nhân viên");
+        styleMenu(menuNhanVien, BLUE);
+
+        JMenuItem itemThem = new JMenuItem("Thêm nhân viên");
+        itemThem.addActionListener(e -> hienThiNhanVien("them"));
+
+        JMenuItem itemTraCuu = new JMenuItem("Tra cứu nhân viên");
+        itemTraCuu.addActionListener(e -> hienThiNhanVien("traCuu"));
+
+        JMenuItem itemCapNhat = new JMenuItem("Cập nhật nhân viên");
+        itemCapNhat.addActionListener(e -> hienThiNhanVien("capNhat"));
+
+        JMenuItem itemPhanQuyen = new JMenuItem("Phân quyền tài khoản");
+        itemPhanQuyen.addActionListener(e -> hienThiNhanVien("phanQuyen"));
+
+        JMenuItem itemLapHoaDon = new JMenuItem("Lập hóa đơn");
+        itemLapHoaDon.addActionListener(e -> hienThiNhanVien("lapHoaDon"));
+
+        JMenuItem itemHoaDonDaLap = new JMenuItem("Xem hóa đơn đã lập");
+        itemHoaDonDaLap.addActionListener(e -> hienThiNhanVien("hoaDonDaLap"));
+
+        menuNhanVien.add(itemThem);
+        menuNhanVien.add(itemTraCuu);
+        menuNhanVien.add(itemCapNhat);
+        menuNhanVien.addSeparator();
+        menuNhanVien.add(itemPhanQuyen);
+        menuNhanVien.add(itemLapHoaDon);
+        menuNhanVien.add(itemHoaDonDaLap);
+
+        return menuNhanVien;
+    }
+
     private JMenu taoMenuThongKe() {
         JMenu menu = new JMenu("Thống kê");
         styleMenu(menu, TEAL);
-        menu.add(taoMenuItemChucNang("Doanh thu theo ngày", "Màn hình thống kê doanh thu theo ngày"));
-        menu.add(taoMenuItemChucNang("Doanh thu theo tháng", "Màn hình thống kê doanh thu theo tháng"));
-        menu.add(taoMenuItemChucNang("Tồn kho", "Màn hình thống kê tồn kho"));
-        menu.add(taoMenuItemChucNang("Sản phẩm bán chạy", "Màn hình thống kê sản phẩm bán chạy"));
-        menu.add(taoMenuItemChucNang("Hóa đơn bán", "Màn hình thống kê hóa đơn bán"));
-        menu.add(taoMenuItemChucNang("Phiếu nhập", "Màn hình thống kê phiếu nhập"));
+        menu.add(taoMenuItemThongKe("Doanh thu theo ngày", e -> hienThiThongKe("doanhThuNgay")));
+        menu.add(taoMenuItemThongKe("Doanh thu theo tháng", e -> hienThiThongKe("doanhThuThang")));
+        menu.add(taoMenuItemThongKe("Tồn kho", e -> hienThiThongKe("tonKho")));
+        menu.add(taoMenuItemThongKe("Sản phẩm bán chạy", e -> hienThiThongKe("banChay")));
+        menu.add(taoMenuItemThongKe("Hóa đơn bán", e -> hienThiThongKe("hoaDon")));
+        menu.add(taoMenuItemThongKe("Phiếu nhập", e -> hienThiThongKe("phieuNhap")));
         return menu;
+    }
+
+    private JMenuItem taoMenuItemSanPham(String tieuDe, java.awt.event.ActionListener listener) {
+        JMenuItem item = new JMenuItem(tieuDe);
+        item.addActionListener(listener);
+        return item;
+    }
+
+    private JMenuItem taoMenuItemThongKe(String tieuDe, java.awt.event.ActionListener listener) {
+        JMenuItem item = new JMenuItem(tieuDe);
+        item.addActionListener(listener);
+        return item;
     }
 
     private JMenuItem taoMenuItemChucNang(String tieuDe, String moTa) {

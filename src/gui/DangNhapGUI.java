@@ -23,6 +23,7 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
+import connectDB.DatabaseInitializer;
 import dao.TaiKhoanDAO;
 import entity.TaiKhoan;
 
@@ -278,6 +279,13 @@ public class DangNhapGUI extends JFrame {
 		}
 
 		SwingUtilities.invokeLater(() -> {
+			try {
+				DatabaseInitializer.ensureSchema();
+				DatabaseInitializer.loadSeedData();
+			} catch (IllegalStateException ex) {
+				JOptionPane.showMessageDialog(null, "Lỗi khởi tạo CSDL: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+			}
+
 			DangNhapGUI dangNhapGUI = new DangNhapGUI();
 			dangNhapGUI.khoiDong(false);
 		});

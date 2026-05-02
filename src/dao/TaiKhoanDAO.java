@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import connectDB.ConnectDB;
 import entity.TaiKhoan;
@@ -23,6 +25,13 @@ public class TaiKhoanDAO {
             "UPDATE TaiKhoan " +
             "SET [password] = ? " +
             "WHERE [username] = ? AND [password] = ? AND trangThai = 1";
+
+        private static final String FIND_ALL_SQL =
+            "SELECT maTK, [username], [password], [role], trangThai " +
+            "FROM TaiKhoan ORDER BY maTK";
+
+        private static final String UPDATE_ROLE_STATUS_SQL =
+            "UPDATE TaiKhoan SET [role] = ?, trangThai = ? WHERE maTK = ?";
 
     public TaiKhoan dangNhap(String username, String password) {
         try (Connection con = ConnectDB.getInstance().getConnection();
@@ -73,6 +82,41 @@ public class TaiKhoanDAO {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new IllegalStateException("Lỗi truy vấn đổi mật khẩu: " + e.getMessage(), e);
+        }
+    }
+
+    public List<TaiKhoan> timTatCa() {
+        try (Connection con = ConnectDB.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(FIND_ALL_SQL);
+             ResultSet rs = ps.executeQuery()) {
+
+            List<TaiKhoan> ds = new ArrayList<>();
+            while (rs.next()) {
+                ds.add(new TaiKhoan(
+                        rs.getInt("maTK"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getBoolean("trangThai")
+                ));
+            }
+            return ds;
+        } catch (SQLException e) {
+            throw new IllegalStateException("Lỗi truy vấn danh sách tài khoản: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean capNhatPhanQuyen(int maTK, String role, boolean trangThai) {
+        try (Connection con = ConnectDB.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(UPDATE_ROLE_STATUS_SQL)) {
+
+            ps.setString(1, role);
+            ps.setBoolean(2, trangThai);
+            ps.setInt(3, maTK);
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new IllegalStateException("Lỗi cập nhật phân quyền tài khoản: " + e.getMessage(), e);
         }
     }
 }

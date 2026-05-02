@@ -44,10 +44,10 @@ public class ThongTinNhanVienGUI extends JDialog {
         form.add(new JLabel(nhanVien != null ? safeText(nhanVien.getDiaChi()) : ""));
 
         form.add(new JLabel("Ngày sinh:"));
-        form.add(new JLabel(nhanVien != null && nhanVien.getNgaySinh() != null ? nhanVien.getNgaySinh().toString() : ""));
+        form.add(new JLabel(nhanVien != null ? NhanVienUiHelper.formatDate(nhanVien.getNgaySinh()) : ""));
 
         form.add(new JLabel("Ngày vào làm:"));
-        form.add(new JLabel(nhanVien != null && nhanVien.getNgayVaoLam() != null ? nhanVien.getNgayVaoLam().toString() : ""));
+        form.add(new JLabel(nhanVien != null ? NhanVienUiHelper.formatDate(nhanVien.getNgayVaoLam()) : ""));
 
         root.add(form, BorderLayout.CENTER);
         setContentPane(root);

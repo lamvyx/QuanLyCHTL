@@ -10,11 +10,12 @@ public class SanPham {
     private Integer soLuongTon;
     private String loaiSP;
     private String maNCC;
+    private String hinhAnh;
 
     public SanPham() {
     }
 
-    public SanPham(String maSP, String tenSP, Double gia, LocalDate hanSuDung, Integer soLuongTon, String loaiSP, String maNCC) {
+    public SanPham(String maSP, String tenSP, Double gia, LocalDate hanSuDung, Integer soLuongTon, String loaiSP, String maNCC, String hinhAnh) {
         this.maSP = maSP;
         this.tenSP = tenSP;
         this.gia = gia;
@@ -22,6 +23,7 @@ public class SanPham {
         this.soLuongTon = soLuongTon;
         this.loaiSP = loaiSP;
         this.maNCC = maNCC;
+        this.hinhAnh = hinhAnh;
     }
 
     public String getMaSP() {
@@ -80,6 +82,14 @@ public class SanPham {
         this.maNCC = maNCC;
     }
 
+    public String getHinhAnh() {
+        return hinhAnh;
+    }
+
+    public void setHinhAnh(String hinhAnh) {
+        this.hinhAnh = hinhAnh;
+    }
+
     @Override
     public String toString() {
         return "SanPham{" +
@@ -87,6 +97,7 @@ public class SanPham {
                 ", tenSP='" + tenSP + '\'' +
                 ", gia=" + gia +
                 ", soLuongTon=" + soLuongTon +
+                ", hinhAnh='" + hinhAnh + '\'' +
                 '}';
     }
 }
