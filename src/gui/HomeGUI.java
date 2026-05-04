@@ -223,6 +223,7 @@ public class HomeGUI extends JFrame {
         return menuBar;
     }
 
+<<<<<<< HEAD
 //    private JMenu taoMenuCrudVaTacVu(String tenMenu, String boLocGoiY, String[] tacVuThem) {
 //        JMenu menu = new JMenu(tenMenu);
 //        styleMenu(menu, BLUE);
@@ -256,10 +257,13 @@ public class HomeGUI extends JFrame {
 //        return menu;
 //    }
     
+=======
+>>>>>>> dcf7c0fe2cf37d3adb70b3c0f09771caa7965032
     private JMenu taoMenuCrudVaTacVu(String tenMenu, String boLocGoiY, String[] tacVuThem) {
         JMenu menu = new JMenu(tenMenu);
         styleMenu(menu, BLUE);
 
+<<<<<<< HEAD
         // Thêm
         JMenuItem itemThem = new JMenuItem("Thêm " + tenMenu.toLowerCase());
         itemThem.addActionListener(e -> {
@@ -312,6 +316,16 @@ public class HomeGUI extends JFrame {
                     }
                 });
                 menu.add(item);
+=======
+        menu.add(taoMenuItemChucNang("Thêm " + tenMenu.toLowerCase(), "Mở màn hình thêm " + tenMenu.toLowerCase()));
+        menu.add(taoMenuItemChucNang("Tra cứu " + tenMenu.toLowerCase(), "Màn hình tra cứu " + tenMenu.toLowerCase() + " - " + boLocGoiY));
+        menu.add(taoMenuItemChucNang("Cập nhật " + tenMenu.toLowerCase(), "Mở màn hình cập nhật " + tenMenu.toLowerCase()));
+
+        if (tacVuThem != null && tacVuThem.length > 0) {
+            menu.addSeparator();
+            for (String tacVu : tacVuThem) {
+                menu.add(taoMenuItemChucNang(tacVu, "Tác vụ " + tacVu.toLowerCase() + " cho " + tenMenu.toLowerCase()));
+>>>>>>> dcf7c0fe2cf37d3adb70b3c0f09771caa7965032
             }
         }
 

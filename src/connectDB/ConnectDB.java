@@ -21,7 +21,11 @@ public class ConnectDB {
         return instance;
     }
 
+<<<<<<< HEAD
     public static Connection getConnection() throws SQLException {
+=======
+    public Connection getConnection() throws SQLException {
+>>>>>>> dcf7c0fe2cf37d3adb70b3c0f09771caa7965032
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
