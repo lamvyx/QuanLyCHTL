@@ -1,0 +1,38 @@
+# Compiled class files
+*.class
+
+# Packaged files
+*.jar
+*.war
+*.ear
+
+# Keep JDBC drivers in repo
+!lib/*.jar
+
+# Build directories
+bin/
+out/
+target/
+build/
+
+# Logs
+*.log
+logs/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE settings
+.idea/
+.vscode/
+*.iml
+
+# Temporary files
+*.tmp
+*.temp
+
+# Local database files
+*.db
+*.sqlite
+*.sqlite3
