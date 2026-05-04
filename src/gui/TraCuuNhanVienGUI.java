@@ -60,15 +60,21 @@ public class TraCuuNhanVienGUI extends JFrame {
         top.setOpaque(false);
         top.add(new JLabel("Từ khóa (mã, tên, SĐT):"));
         top.add(txtTuKhoa);
+        NhanVienUiHelper.addPlaceholder(txtTuKhoa, "Mã, tên hoặc SĐT...");
 
         JButton btnTim = new JButton("Tìm kiếm");
         NhanVienUiHelper.styleButton(btnTim, NhanVienUiHelper.BLUE);
-        btnTim.addActionListener(e -> napDuLieu(nhanVienDAO.timTheoTuKhoa(txtTuKhoa.getText())));
+        btnTim.addActionListener(e -> {
+            String tuKhoa = txtTuKhoa.getText();
+            if (tuKhoa.equals("Mã, tên hoặc SĐT...")) tuKhoa = "";
+            napDuLieu(nhanVienDAO.timTheoTuKhoa(tuKhoa));
+        });
 
         JButton btnTaiLai = new JButton("Tải lại");
         NhanVienUiHelper.styleGhostButton(btnTaiLai);
         btnTaiLai.addActionListener(e -> {
             txtTuKhoa.setText("");
+            NhanVienUiHelper.addPlaceholder(txtTuKhoa, "Mã, tên hoặc SĐT...");
             napDuLieu(nhanVienDAO.timTatCa());
         });
 

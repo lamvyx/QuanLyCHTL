@@ -204,6 +204,21 @@ public class SanPhamDAO {
         }
     }
 
+    public List<String> layDanhSachLoaiSanPham() {
+        String sql = "SELECT DISTINCT loaiSP FROM SanPham WHERE loaiSP IS NOT NULL AND loaiSP <> '' ORDER BY loaiSP";
+        try (Connection con = ConnectDB.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            List<String> list = new ArrayList<>();
+            while (rs.next()) {
+                list.add(rs.getString("loaiSP"));
+            }
+            return list;
+        } catch (SQLException e) {
+            throw new IllegalStateException("Lỗi lấy danh sách loại sản phẩm: " + e.getMessage(), e);
+        }
+    }
+
     private SanPham mapSanPham(ResultSet rs) throws SQLException {
         Date hanSuDungSql = rs.getDate("hanSuDung");
         return new SanPham(

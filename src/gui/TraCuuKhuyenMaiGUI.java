@@ -73,14 +73,15 @@ public class TraCuuKhuyenMaiGUI extends JDialog {
                 BorderFactory.createLineBorder(BORDER_CLR),
                 new EmptyBorder(7, 10, 7, 10)
         ));
-        txtTimKiem.setToolTipText("Nhập mã hoặc tên khuyến mãi...");
+        NhanVienUiHelper.addPlaceholder(txtTimKiem, "Nhập mã hoặc tên KM cần tìm...");
 
-        JButton btnTimKiem = taoNut("Tìm kiếm", BLUE, Color.WHITE);
-        JButton btnTatCa   = taoNut("Tất cả", new Color(107, 114, 128), Color.WHITE);
+        JButton btnTimKiem = taoNut("Tìm kiếm", BLUE, Color.BLACK);
+        JButton btnTatCa   = taoNut("Tất cả", new Color(107, 114, 128), Color.BLACK);
 
         btnTimKiem.addActionListener(e -> timKiem());
         btnTatCa.addActionListener(e -> {
             txtTimKiem.setText("");
+            NhanVienUiHelper.addPlaceholder(txtTimKiem, "Nhập mã hoặc tên KM cần tìm...");
             taiDuLieu(khuyenMaiDAO.layTatCa());
         });
         txtTimKiem.addActionListener(e -> timKiem());
@@ -207,7 +208,7 @@ public class TraCuuKhuyenMaiGUI extends JDialog {
 
     private void timKiem() {
         String tuKhoa = txtTimKiem.getText().trim();
-        if (tuKhoa.isEmpty()) {
+        if (tuKhoa.isEmpty() || tuKhoa.equals("Nhập mã hoặc tên KM cần tìm...")) {
             taiDuLieu(khuyenMaiDAO.layTatCa());
         } else {
             taiDuLieu(khuyenMaiDAO.timKiem(tuKhoa));

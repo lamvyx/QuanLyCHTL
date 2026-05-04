@@ -93,40 +93,56 @@ public class ThongKeDAO {
                 "LEFT JOIN ChiTietHoaDon ct ON hd.maHD = ct.maHD " +
                 "GROUP BY hd.maHD, hd.ngayLap, hd.maNV, nv.tenNV, hd.maKH, kh.tenKH " +
                 "ORDER BY hd.ngayLap DESC, hd.maHD DESC";
-        return truyVanThongKe(sql, rs -> new Object[] {
+        return truyVanThongKe(sql, rs -> {
+            String nv = rs.getString("maNV") != null ? rs.getString("maNV") + " - " + rs.getString("tenNV") : "N/A";
+            String kh = rs.getString("maKH") != null ? rs.getString("maKH") + " - " + rs.getString("tenKH") : "Khách vãng lai";
+            return new Object[] {
                 rs.getString("maHD"),
                 rs.getDate("ngayLap") != null ? rs.getDate("ngayLap").toLocalDate() : null,
-                rs.getString("maNV"),
-                rs.getString("tenNV"),
-                rs.getString("maKH"),
-                rs.getString("tenKH"),
+                nv,
+                kh,
                 rs.getInt("soDongSP"),
                 rs.getDouble("tongTien")
+            };
         });
     }
 
-    public List<Object[]> phieuNhap() {
+    public List<Object[]> timHoaDonTheoMa(String ma) {
+        if (ma == null || ma.trim().isEmpty()) return hoaDonBan();
         String sql =
-                "SELECT pn.maPhieu, pn.ngayNhap, pn.maNV, nv.tenNV, pn.maNCC, ncc.tenNCC, " +
-                "COUNT(ct.maSP) AS soDongSP, COALESCE(SUM(ct.soLuong * ct.giaNhap), 0) AS tongTien " +
-                "FROM PhieuNhap pn " +
-                "LEFT JOIN NhanVien nv ON pn.maNV = nv.maNV " +
-                "LEFT JOIN NhaCungCap ncc ON pn.maNCC = ncc.maNCC " +
-                "LEFT JOIN ChiTietPhieuNhap ct ON pn.maPhieu = ct.maPhieu " +
-                "GROUP BY pn.maPhieu, pn.ngayNhap, pn.maNV, nv.tenNV, pn.maNCC, ncc.tenNCC " +
-                "ORDER BY pn.ngayNhap DESC, pn.maPhieu DESC";
-        return truyVanThongKe(sql, rs -> new Object[] {
-                rs.getString("maPhieu"),
-                rs.getDate("ngayNhap") != null ? rs.getDate("ngayNhap").toLocalDate() : null,
-                rs.getString("maNV"),
-                rs.getString("tenNV"),
-                rs.getString("maNCC"),
-                rs.getString("tenNCC"),
-                rs.getInt("soDongSP"),
-                rs.getDouble("tongTien")
-        });
+                "SELECT hd.maHD, hd.ngayLap, hd.maNV, nv.tenNV, hd.maKH, kh.tenKH, " +
+                "COUNT(ct.maSP) AS soDongSP, COALESCE(SUM(ct.soLuong * ct.donGia), 0) AS tongTien " +
+                "FROM HoaDon hd " +
+                "LEFT JOIN NhanVien nv ON hd.maNV = nv.maNV " +
+                "LEFT JOIN KhachHang kh ON hd.maKH = kh.maKH " +
+                "LEFT JOIN ChiTietHoaDon ct ON hd.maHD = ct.maHD " +
+                "WHERE hd.maHD LIKE ? " +
+                "GROUP BY hd.maHD, hd.ngayLap, hd.maNV, nv.tenNV, hd.maKH, kh.tenKH " +
+                "ORDER BY hd.ngayLap DESC, hd.maHD DESC";
+        
+        try (Connection con = ConnectDB.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, "%" + ma + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                List<Object[]> rows = new ArrayList<>();
+                while (rs.next()) {
+                    String nv = rs.getString("maNV") != null ? rs.getString("maNV") + " - " + rs.getString("tenNV") : "N/A";
+                    String kh = rs.getString("maKH") != null ? rs.getString("maKH") + " - " + rs.getString("tenKH") : "Khách vãng lai";
+                    rows.add(new Object[] {
+                        rs.getString("maHD"),
+                        rs.getDate("ngayLap") != null ? rs.getDate("ngayLap").toLocalDate() : null,
+                        nv,
+                        kh,
+                        rs.getInt("soDongSP"),
+                        rs.getDouble("tongTien")
+                    });
+                }
+                return rows;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("Lỗi truy vấn tìm hóa đơn: " + e.getMessage(), e);
+        }
     }
-
     private List<Object[]> truyVanThongKe(String sql, RowMapper mapper) {
         try (Connection con = ConnectDB.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(sql);

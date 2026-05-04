@@ -26,9 +26,13 @@ public class TraCuuKhachHangGUI extends JDialog {
         panelTim.add(txtMaKH);
 
         JButton btnTim = new JButton("Tìm");
+        NhanVienUiHelper.styleButton(btnTim, NhanVienUiHelper.BLUE);
         JButton btnXoaTrang = new JButton("Xóa trắng");
+        NhanVienUiHelper.styleGhostButton(btnXoaTrang);
         panelTim.add(btnTim);
         panelTim.add(btnXoaTrang);
+        
+        NhanVienUiHelper.addPlaceholder(txtMaKH, "Nhập mã KH (VD: KH001)...");
 
         // ── Bảng kết quả ─────────────────────────────────────────────
         String[] cols = {"Mã KH", "Tên KH", "Số điện thoại", "Điểm tích lũy", "Loại KH"};
@@ -48,7 +52,7 @@ public class TraCuuKhachHangGUI extends JDialog {
         // ── Xử lý nút Tìm ────────────────────────────────────────────
         btnTim.addActionListener(e -> {
             String ma = txtMaKH.getText().trim();
-            if (ma.isEmpty()) {
+            if (ma.isEmpty() || ma.equals("Nhập mã KH (VD: KH001)...")) {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập mã KH cần tìm!");
                 return;
             }

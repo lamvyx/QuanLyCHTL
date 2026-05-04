@@ -34,7 +34,7 @@ public class TaiKhoanDAO {
             "UPDATE TaiKhoan SET [role] = ?, trangThai = ? WHERE maTK = ?";
 
     public TaiKhoan dangNhap(String username, String password) {
-        try (Connection con = ConnectDB.getInstance().getConnection();
+        try (Connection con = ConnectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(LOGIN_SQL)) {
 
             ps.setString(1, username);
@@ -58,7 +58,7 @@ public class TaiKhoanDAO {
     }
 
     public boolean doiMatKhau(int maTK, String matKhauCu, String matKhauMoi) {
-        try (Connection con = ConnectDB.getInstance().getConnection();
+        try (Connection con = ConnectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(CHANGE_PASSWORD_SQL)) {
 
             ps.setString(1, matKhauMoi);
@@ -72,7 +72,7 @@ public class TaiKhoanDAO {
     }
 
     public boolean doiMatKhauTheoUsername(String username, String matKhauCu, String matKhauMoi) {
-        try (Connection con = ConnectDB.getInstance().getConnection();
+        try (Connection con = ConnectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(CHANGE_PASSWORD_BY_USERNAME_SQL)) {
 
             ps.setString(1, matKhauMoi);
@@ -86,7 +86,7 @@ public class TaiKhoanDAO {
     }
 
     public List<TaiKhoan> timTatCa() {
-        try (Connection con = ConnectDB.getInstance().getConnection();
+        try (Connection con = ConnectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(FIND_ALL_SQL);
              ResultSet rs = ps.executeQuery()) {
 

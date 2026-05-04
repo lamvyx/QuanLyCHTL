@@ -68,8 +68,7 @@ public class CapNhatDiemTichLuyGUI extends JFrame {
         txtTimKiem.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         txtTimKiem.setPreferredSize(new Dimension(200, 30));
         pnSearch.add(txtTimKiem);
-        btnTimKiem = new JButton("Tìm kiếm");
-        styleButton(btnTimKiem, new Color(155, 89, 182));
+        btnTimKiem = NhanVienUiHelper.createPrimaryButton("Tìm kiếm");
         pnSearch.add(btnTimKiem);
         add(pnSearch, BorderLayout.BEFORE_FIRST_LINE);
 
@@ -198,13 +197,10 @@ public class CapNhatDiemTichLuyGUI extends JFrame {
 
         // Nút thao tác
         JPanel pnBtnThaoTac = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
-        pnBtnThaoTac.setBackground(Color.WHITE);
-        btnCongDiem = new JButton("Cộng điểm");
-        styleButton(btnCongDiem, new Color(39, 174, 96));
-        btnDoiDiem = new JButton(" Đổi điểm");
-        styleButton(btnDoiDiem, new Color(230, 126, 34));
-        btnResetDiem = new JButton(" Reset");
-        styleButton(btnResetDiem, new Color(127, 140, 141));
+        pnBtnThaoTac.setOpaque(false);
+        btnCongDiem = NhanVienUiHelper.createPrimaryButton("Cộng điểm");
+        btnDoiDiem = NhanVienUiHelper.createSecondaryButton("Đổi điểm lấy quà");
+        btnResetDiem = NhanVienUiHelper.createSecondaryButton("Làm mới");
         pnBtnThaoTac.add(btnCongDiem);
         pnBtnThaoTac.add(btnDoiDiem);
         pnBtnThaoTac.add(btnResetDiem);
@@ -273,8 +269,7 @@ public class CapNhatDiemTichLuyGUI extends JFrame {
         // Nút đóng
         JPanel pnBottom = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 8));
         pnBottom.setBackground(new Color(245, 247, 250));
-        btnDong = new JButton("Đóng");
-        styleButton(btnDong, new Color(192, 57, 43));
+        btnDong = NhanVienUiHelper.createSecondaryButton("Đóng");
         pnBottom.add(btnDong);
         pnMain.add(pnBottom, BorderLayout.SOUTH);
 
@@ -588,6 +583,8 @@ public class CapNhatDiemTichLuyGUI extends JFrame {
         btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btn.setFocusPainted(false);
         btn.setBorderPainted(false);
+        btn.setOpaque(true);
+        btn.setContentAreaFilled(true);
         btn.setPreferredSize(new Dimension(135, 33));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btn.addMouseListener(new MouseAdapter() {

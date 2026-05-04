@@ -18,7 +18,7 @@ public class SQLSeedLoader {
             throw new IllegalStateException("Không thể đọc file SQL: " + filePath, e);
         }
 
-        try (Connection con = ConnectDB.getInstance().getConnection();
+        try (Connection con = ConnectDB.getConnection();
              Statement st = con.createStatement()) {
             String content = sql.toString();
             String[] batches = content.split("(?i)\\bGO\\b");

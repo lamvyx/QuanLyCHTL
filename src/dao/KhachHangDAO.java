@@ -118,4 +118,45 @@ public class KhachHangDAO {
         } catch (SQLException e) { e.printStackTrace(); }
         return false;
     }
+
+    public boolean them(KhachHang kh) {
+        return themKhachHang(kh);
+    }
+
+    public boolean capNhat(KhachHang kh) {
+        return capNhatKhachHang(kh);
+    }
+
+    public List<Object[]> layLichSuMuaHang(String maKH) {
+        List<Object[]> list = new ArrayList<>();
+        String sql = "SELECT hd.maHD, hd.ngayLap, " +
+                     "CAST(SUM(ct.soLuong * ct.donGia) * (1 - ISNULL(km.phanTramGiam, 0)/100.0) * (1 + ISNULL(th.phanTram, 0)/100.0) AS DECIMAL(18,2)) as thanhToan, " +
+                     "CAST(SUM(ct.soLuong * ct.donGia) / 100 AS INT) as diemCong, nv.tenNV " +
+                     "FROM HoaDon hd " +
+                     "JOIN ChiTietHoaDon ct ON hd.maHD = ct.maHD " +
+                     "LEFT JOIN NhanVien nv ON hd.maNV = nv.maNV " +
+                     "LEFT JOIN KhuyenMai km ON hd.maKM = km.maKM " +
+                     "LEFT JOIN Thue th ON hd.maThue = th.maThue " +
+                     "WHERE hd.maKH = ? " +
+                     "GROUP BY hd.maHD, hd.ngayLap, nv.tenNV, km.phanTramGiam, th.phanTram " +
+                     "ORDER BY hd.ngayLap DESC";
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, maKH.trim());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new Object[]{
+                        rs.getString(1),
+                        rs.getTimestamp(2).toString(),
+                        rs.getDouble(3),
+                        rs.getInt(4),
+                        rs.getString(5)
+                    });
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

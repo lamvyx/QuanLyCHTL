@@ -1,7 +1,25 @@
 USE QLCuaHang;
 GO
 
--- Thêm một số nhà cung cấp mẫu
+-- Thêm các nhà cung cấp mẫu (NCC001 - NCC008)
+
+IF NOT EXISTS (SELECT 1 FROM NhaCungCap WHERE maNCC = N'NCC001')
+BEGIN
+    INSERT INTO NhaCungCap(maNCC, tenNCC, sdt, diaChi, email)
+    VALUES (N'NCC001', N'Công ty ABC Foods', N'0281111222', N'12 Nguyễn Trãi, Q1', N'contact@abcfoods.vn');
+END;
+
+IF NOT EXISTS (SELECT 1 FROM NhaCungCap WHERE maNCC = N'NCC002')
+BEGIN
+    INSERT INTO NhaCungCap(maNCC, tenNCC, sdt, diaChi, email)
+    VALUES (N'NCC002', N'Công ty Fresh Drink', N'0282222333', N'88 Lê Lợi, Q3', N'sales@freshdrink.vn');
+END;
+
+IF NOT EXISTS (SELECT 1 FROM NhaCungCap WHERE maNCC = N'NCC003')
+BEGIN
+    INSERT INTO NhaCungCap(maNCC, tenNCC, sdt, diaChi, email)
+    VALUES (N'NCC003', N'Công ty Snack House', N'0283333444', N'45 Hai Bà Trưng, Q1', N'hello@snackhouse.vn');
+END;
 
 IF NOT EXISTS (SELECT 1 FROM NhaCungCap WHERE maNCC = N'NCC004')
 BEGIN

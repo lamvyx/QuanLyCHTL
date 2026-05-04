@@ -50,7 +50,16 @@ public class ThongTinNhanVienGUI extends JDialog {
         form.add(new JLabel(nhanVien != null ? NhanVienUiHelper.formatDate(nhanVien.getNgayVaoLam()) : ""));
 
         root.add(form, BorderLayout.CENTER);
+
+        javax.swing.JButton btnClose = NhanVienUiHelper.createPrimaryButton("Đóng");
+        btnClose.addActionListener(e -> dispose());
+        JPanel footer = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        footer.setOpaque(false);
+        footer.add(btnClose);
+        root.add(footer, BorderLayout.SOUTH);
+
         setContentPane(root);
+        setSize(460, 320); // Tăng chiều cao để chứa nút đóng
     }
 
     private String safeText(String value) {

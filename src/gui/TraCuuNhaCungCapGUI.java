@@ -71,6 +71,10 @@ public class TraCuuNhaCungCapGUI extends JDialog {
 
         filterPanel.add(btnTimKiem);
         filterPanel.add(btnLamMoi);
+        
+        NhanVienUiHelper.addPlaceholder(txtMaNCC, "Mã NCC...");
+        NhanVienUiHelper.addPlaceholder(txtTenNCC, "Tên nhà cung cấp...");
+        NhanVienUiHelper.addPlaceholder(txtSDT, "Số điện thoại...");
         root.add(filterPanel, BorderLayout.BEFORE_FIRST_LINE); // nằm sau header
 
         // ── Gộp filter + table vào center ───────
@@ -133,11 +137,11 @@ public class TraCuuNhaCungCapGUI extends JDialog {
     }
 
     private void search() {
-        List<NhaCungCap> result = dao.search(
-            txtMaNCC .getText().trim(),
-            txtTenNCC.getText().trim(),
-            txtSDT   .getText().trim()
-        );
+        String ma = txtMaNCC.getText().equals("Mã NCC...") ? "" : txtMaNCC.getText().trim();
+        String ten = txtTenNCC.getText().equals("Tên nhà cung cấp...") ? "" : txtTenNCC.getText().trim();
+        String sdt = txtSDT.getText().equals("Số điện thoại...") ? "" : txtSDT.getText().trim();
+        
+        List<NhaCungCap> result = dao.search(ma, ten, sdt);
         fillTable(result);
     }
 
@@ -156,9 +160,13 @@ public class TraCuuNhaCungCapGUI extends JDialog {
     }
 
     private void clearFilter() {
-        txtMaNCC .setText("");
+        txtMaNCC.setText("");
         txtTenNCC.setText("");
-        txtSDT   .setText("");
+        txtSDT.setText("");
+        // Reset placeholders
+        NhanVienUiHelper.addPlaceholder(txtMaNCC, "Mã NCC...");
+        NhanVienUiHelper.addPlaceholder(txtTenNCC, "Tên nhà cung cấp...");
+        NhanVienUiHelper.addPlaceholder(txtSDT, "Số điện thoại...");
     }
 
     // ── helpers ─────────────────────────────────
@@ -182,7 +190,7 @@ public class TraCuuNhaCungCapGUI extends JDialog {
         JButton b = new JButton(text);
         b.setFont(FNT_BOLD);
         b.setBackground(bg);
-        b.setForeground(Color.WHITE);
+        b.setForeground(Color.BLACK);
         b.setFocusPainted(false);
         b.setBorder(BorderFactory.createEmptyBorder(6, 14, 6, 14));
         b.setOpaque(true);

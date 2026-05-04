@@ -69,7 +69,7 @@ public class DoiMatKhauGUI extends JDialog {
         root.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
         JPanel topBar = new JPanel(new BorderLayout());
-        JButton btnVeTrangChu = new JButton(cheDoDangNhap ? "Quay về đăng nhập" : "Quay về trang chủ");
+        JButton btnVeTrangChu = NhanVienUiHelper.createSecondaryButton(cheDoDangNhap ? "Quay về đăng nhập" : "Quay về trang chủ");
         btnVeTrangChu.addActionListener(e -> dispose());
         topBar.add(btnVeTrangChu, BorderLayout.WEST);
         root.add(topBar, BorderLayout.NORTH);
@@ -94,13 +94,14 @@ public class DoiMatKhauGUI extends JDialog {
 
         root.add(form, BorderLayout.CENTER);
 
-        JButton btnCapNhat = new JButton("Cập nhật");
+        JButton btnCapNhat = NhanVienUiHelper.createPrimaryButton("Cập nhật mật khẩu");
         btnCapNhat.addActionListener(e -> xuLyDoiMatKhau());
 
-        JButton btnDong = new JButton("Đóng");
+        JButton btnDong = NhanVienUiHelper.createSecondaryButton("Đóng");
         btnDong.addActionListener(e -> dispose());
 
-        JPanel actions = new JPanel(new GridLayout(1, 2, 8, 8));
+        JPanel actions = new JPanel(new GridLayout(1, 2, 10, 0));
+        actions.setOpaque(false);
         actions.add(btnCapNhat);
         actions.add(btnDong);
 

@@ -150,8 +150,8 @@ public class KiemTraKhuyenMaiGUI extends JDialog {
         JPanel footerButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         footerButtons.setOpaque(false);
 
-        JButton btnLamMoi = taoNut("↻ Làm mới", TEAL, Color.WHITE);
-        JButton btnDong   = taoNut("Đóng", new Color(229, 231, 235), NAVY);
+        JButton btnLamMoi = NhanVienUiHelper.createPrimaryButton("↻ Làm mới dữ liệu");
+        JButton btnDong   = NhanVienUiHelper.createSecondaryButton("Đóng");
 
         btnLamMoi.addActionListener(e -> taiDuLieu());
         btnDong.addActionListener(e -> dispose());

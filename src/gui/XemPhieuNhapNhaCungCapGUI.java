@@ -72,7 +72,7 @@ public class XemPhieuNhapNhaCungCapGUI extends JDialog {
         cboNCC.setFont(FNT_PLAIN);
         cboNCC.setPreferredSize(new Dimension(280, 30));
 
-        btnXem = btn("📋  Xem phiếu nhập", BLUE);
+        btnXem = NhanVienUiHelper.createPrimaryButton("Xem danh sách phiếu nhập");
         btnXem.addActionListener(e -> xemPhieuNhap());
 
         filter.add(lblNCC);
@@ -152,7 +152,7 @@ public class XemPhieuNhapNhaCungCapGUI extends JDialog {
         JPanel btnBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 14, 10));
         btnBar.setBackground(BG);
         btnBar.setBorder(new MatteBorder(1, 0, 0, 0, new Color(226, 232, 240)));
-        JButton btnDong = btn("✖  Đóng", new Color(185, 28, 28));
+        JButton btnDong = NhanVienUiHelper.createSecondaryButton("Đóng cửa sổ");
         btnDong.addActionListener(e -> dispose());
         btnBar.add(btnDong);
         root.add(btnBar, BorderLayout.SOUTH);

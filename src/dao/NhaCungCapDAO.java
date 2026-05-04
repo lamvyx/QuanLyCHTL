@@ -147,21 +147,30 @@ public class NhaCungCapDAO {
 
     public List<Object[]> getPhieuNhapByNCC(String maNCC) {
         List<Object[]> list = new ArrayList<>();
-        String sql = "SELECT pn.maPhieu, pn.ngayNhap, nv.tenNV, pn.ghiChu " +
-                     "FROM PhieuNhap pn " +
-                     "JOIN NhanVien nv ON pn.maNV = nv.maNV " +
-                     "WHERE pn.maNCC = ? " +
-                     "ORDER BY pn.ngayNhap DESC";
+        StringBuilder sql = new StringBuilder(
+            "SELECT pn.maPhieu, pn.ngayNhap, nv.tenNV, SUM(ct.soLuong * ct.giaNhap) AS tongTien " +
+            "FROM PhieuNhap pn " +
+            "JOIN NhanVien nv ON pn.maNV = nv.maNV " +
+            "LEFT JOIN ChiTietPhieuNhap ct ON pn.maPhieu = ct.maPhieu ");
+        
+        if (maNCC != null && !maNCC.trim().isEmpty()) {
+            sql.append("WHERE pn.maNCC = ? ");
+        }
+        
+        sql.append("GROUP BY pn.maPhieu, pn.ngayNhap, nv.tenNV ORDER BY pn.ngayNhap DESC");
+        
         try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, maNCC);
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            if (maNCC != null && !maNCC.trim().isEmpty()) {
+                ps.setString(1, maNCC.trim());
+            }
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     list.add(new Object[]{
                         rs.getString("maPhieu"),
                         rs.getDate("ngayNhap"),
                         rs.getString("tenNV"),
-                        rs.getString("ghiChu")
+                        rs.getDouble("tongTien")
                     });
                 }
             }
@@ -205,6 +214,46 @@ public class NhaCungCapDAO {
             ps.setString(4, (nhanXet == null || nhanXet.isEmpty()) ? null : nhanXet);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) { e.printStackTrace(); return false; }
+    }
+
+    public List<Object[]> layDanhSachDanhGia() {
+        List<Object[]> list = new ArrayList<>();
+        String sql = "SELECT dg.maNCC, ncc.tenNCC, dg.diemDanhGia, dg.nhanXet " +
+                     "FROM DanhGiaGiaoNhan dg JOIN NhaCungCap ncc ON dg.maNCC = ncc.maNCC " +
+                     "ORDER BY dg.ngayDanhGia DESC";
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(new Object[]{
+                    rs.getString(1),
+                    rs.getString(2),
+                    rs.getInt(3),
+                    rs.getString(4)
+                });
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list;
+    }
+
+    public List<NhaCungCap> getAll() {
+        return timTatCa();
+    }
+
+    public NhaCungCap getByMa(String maNCC) {
+        return timTheoMa(maNCC);
+    }
+
+    public boolean them(NhaCungCap ncc) {
+        return themNhaCungCap(ncc);
+    }
+
+    public boolean capNhat(NhaCungCap ncc) {
+        return capNhatNhaCungCap(ncc);
+    }
+
+    public boolean xoa(String maNCC) {
+        return xoaNhaCungCap(maNCC);
     }
 
     private NhaCungCap mapRow(ResultSet rs) throws SQLException {

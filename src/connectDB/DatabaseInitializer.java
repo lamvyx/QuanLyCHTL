@@ -7,7 +7,7 @@ import java.sql.Statement;
 public class DatabaseInitializer {
     public static void ensureSchema() {
         String sql = "IF COL_LENGTH('SanPham', 'hinhAnh') IS NULL BEGIN ALTER TABLE SanPham ADD hinhAnh NVARCHAR(255) NULL; END";
-        try (Connection con = ConnectDB.getInstance().getConnection();
+        try (Connection con = ConnectDB.getConnection();
              Statement st = con.createStatement()) {
             st.execute(sql);
         } catch (SQLException e) {
@@ -17,8 +17,11 @@ public class DatabaseInitializer {
 
     public static void loadSeedData() {
         String[] seedFiles = {
+                "sql/seed_core.sql",
                 "sql/seed_nhacungcap.sql",
-                "sql/seed_sanpham_images.sql"
+                "sql/seed_sanpham_images.sql",
+                "sql/seed_thongke.sql",
+                "sql/seed_large.sql"
         };
         for (String file : seedFiles) {
             try {

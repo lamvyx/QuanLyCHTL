@@ -67,8 +67,7 @@ public class LichSuMuaHangGUI extends JFrame {
         txtTimKiem.setPreferredSize(new Dimension(200, 30));
         pnSearch.add(txtTimKiem);
 
-        btnTimKiem = new JButton("Tìm kiếm");
-        styleButton(btnTimKiem, new Color(41, 128, 185));
+        btnTimKiem = NhanVienUiHelper.createPrimaryButton("Tìm kiếm");
         pnSearch.add(btnTimKiem);
 
         pnSearch.add(new JLabel("  Lọc theo:"));
@@ -165,15 +164,14 @@ public class LichSuMuaHangGUI extends JFrame {
         pnMain.add(pnTop, BorderLayout.CENTER);
 
         // Panel nút bấm
-        JPanel pnButton = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 8));
-        pnButton.setBackground(new Color(245, 247, 250));
+        JPanel pnButton = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 12));
+        pnButton.setBackground(Color.WHITE);
+        pnButton.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, NhanVienUiHelper.BORDER));
 
-        btnXemChiTiet = new JButton("Xem chi tiết");
-        styleButton(btnXemChiTiet, new Color(39, 174, 96));
+        btnXemChiTiet = NhanVienUiHelper.createPrimaryButton("Xem chi tiết hóa đơn");
         pnButton.add(btnXemChiTiet);
 
-        btnDong = new JButton("Đóng");
-        styleButton(btnDong, new Color(192, 57, 43));
+        btnDong = NhanVienUiHelper.createSecondaryButton("Đóng cửa sổ");
         pnButton.add(btnDong);
 
         pnMain.add(pnButton, BorderLayout.SOUTH);
@@ -391,6 +389,8 @@ public class LichSuMuaHangGUI extends JFrame {
         btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btn.setFocusPainted(false);
         btn.setBorderPainted(false);
+        btn.setOpaque(true);
+        btn.setContentAreaFilled(true);
         btn.setPreferredSize(new Dimension(140, 35));
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btn.addMouseListener(new MouseAdapter() {

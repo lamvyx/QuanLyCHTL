@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
@@ -28,7 +29,6 @@ public class ThongKeWorkspacePanel extends JPanel {
     private static final String CARD_DOANH_THU_THANG = "doanhThuThang";
     private static final String CARD_BAN_CHAY = "banChay";
     private static final String CARD_HOA_DON = "hoaDon";
-    private static final String CARD_PHIEU_NHAP = "phieuNhap";
 
     private final java.awt.CardLayout cardLayout = new java.awt.CardLayout();
     private final JPanel cardContainer = new JPanel(cardLayout);
@@ -68,7 +68,7 @@ public class ThongKeWorkspacePanel extends JPanel {
     private final JTable tblBanChay = new JTable(modelBanChay);
 
     private final DefaultTableModel modelHoaDon = new DefaultTableModel(new Object[] {
-            "Mã HD", "Ngày lập", "Mã NV", "Tên NV", "Mã KH", "Tên KH", "Số dòng SP", "Tổng tiền"
+            "Mã HD", "Ngày lập", "Nhân viên", "Khách hàng", "Số dòng SP", "Tổng doanh thu"
     }, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
@@ -76,16 +76,6 @@ public class ThongKeWorkspacePanel extends JPanel {
         }
     };
     private final JTable tblHoaDon = new JTable(modelHoaDon);
-
-    private final DefaultTableModel modelPhieuNhap = new DefaultTableModel(new Object[] {
-            "Mã phiếu", "Ngày nhập", "Mã NV", "Tên NV", "Mã NCC", "Tên NCC", "Số dòng SP", "Tổng tiền"
-    }, 0) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-    };
-    private final JTable tblPhieuNhap = new JTable(modelPhieuNhap);
 
     public ThongKeWorkspacePanel() {
         setLayout(new BorderLayout(10, 10));
@@ -107,8 +97,30 @@ public class ThongKeWorkspacePanel extends JPanel {
         cardContainer.add(taoCardBaoCao("Doanh thu theo ngày", "Theo dõi doanh thu và số hóa đơn theo ngày", tblDoanhThuNgay, barDoanhThuNgay, this::taiDoanhThuNgayAsync), CARD_DOANH_THU_NGAY);
         cardContainer.add(taoCardBaoCao("Doanh thu theo tháng", "Tổng hợp doanh thu theo từng tháng", tblDoanhThuThang, barDoanhThuThangChart, this::taiDoanhThuThangAsync), CARD_DOANH_THU_THANG);
         cardContainer.add(taoCardBaoCao("Sản phẩm bán chạy", "Top sản phẩm theo số lượng bán", tblBanChay, pieBanChay, this::taiBanChayAsync), CARD_BAN_CHAY);
-        cardContainer.add(taoCardBaoCao("Hóa đơn bán", "Danh sách hóa đơn bán và tổng tiền", tblHoaDon, null, this::taiHoaDonAsync), CARD_HOA_DON);
-        cardContainer.add(taoCardBaoCao("Phiếu nhập", "Danh sách phiếu nhập và giá trị nhập", tblPhieuNhap, null, this::taiPhieuNhapAsync), CARD_PHIEU_NHAP);
+        JPanel hoaDonPanel = taoCardBaoCao("Hóa đơn bán", "Danh sách hóa đơn bán và doanh thu chi tiết", tblHoaDon, null, this::taiHoaDonAsync);
+        
+        // Thêm thanh tìm kiếm cho hóa đơn
+        JPanel searchBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        searchBar.setOpaque(false);
+        JTextField txtSearchHD = new JTextField(15);
+        NhanVienUiHelper.addPlaceholder(txtSearchHD, "Mã HD...");
+        JButton btnSearchHD = new JButton("Tìm");
+        NhanVienUiHelper.styleButton(btnSearchHD, NhanVienUiHelper.BLUE);
+        btnSearchHD.addActionListener(e -> {
+            String ma = txtSearchHD.getText();
+            if (ma.equals("Mã HD...")) ma = "";
+            taiHoaDonTheoMaAsync(ma);
+        });
+        searchBar.add(new JLabel("Tìm mã HD:"));
+        searchBar.add(txtSearchHD);
+        searchBar.add(btnSearchHD);
+        
+        // Chèn searchBar vào NORTH của contentPanel trong hoaDonPanel (vốn là root của taoCardBaoCao)
+        // Lưu ý: taoCardBaoCao trả về root có NORTH là header+reload. Ta cần chèn vào CENTER -> NORTH.
+        JPanel contentInCard = (JPanel) hoaDonPanel.getComponent(1); // CENTER
+        contentInCard.add(searchBar, BorderLayout.NORTH);
+
+        cardContainer.add(hoaDonPanel, CARD_HOA_DON);
 
         cardLayout.show(cardContainer, CARD_DOANH_THU_NGAY);
         taiDoanhThuNgayAsync();
@@ -134,9 +146,18 @@ public class ThongKeWorkspacePanel extends JPanel {
         taiHoaDonAsync();
     }
 
-    public void showPhieuNhap() {
-        cardLayout.show(cardContainer, CARD_PHIEU_NHAP);
-        taiPhieuNhapAsync();
+    private void taiHoaDonTheoMaAsync(String ma) {
+        new SwingWorker<List<Object[]>, Void>() {
+            @Override
+            protected List<Object[]> doInBackground() {
+                return thongKeDAO.timHoaDonTheoMa(ma);
+            }
+
+            @Override
+            protected void done() {
+                napBang(modelHoaDon, this);
+            }
+        }.execute();
     }
 
     private JPanel taoThanhTieuDe() {
@@ -276,20 +297,6 @@ public class ThongKeWorkspacePanel extends JPanel {
             @Override
             protected void done() {
                 napBang(modelHoaDon, this);
-            }
-        }.execute();
-    }
-
-    private void taiPhieuNhapAsync() {
-        new SwingWorker<List<Object[]>, Void>() {
-            @Override
-            protected List<Object[]> doInBackground() {
-                return thongKeDAO.phieuNhap();
-            }
-
-            @Override
-            protected void done() {
-                napBang(modelPhieuNhap, this);
             }
         }.execute();
     }

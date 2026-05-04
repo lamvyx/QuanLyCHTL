@@ -129,6 +129,30 @@ public class KhuyenMaiDAO {
         return false;
     }
 
+    public List<KhuyenMai> layTatCa() {
+        return timTatCa();
+    }
+
+    public List<KhuyenMai> layConHieuLuc() {
+        return timTatCaHieuLuc();
+    }
+
+    public boolean them(KhuyenMai km) {
+        return themKhuyenMai(km);
+    }
+
+    public boolean capNhat(KhuyenMai km) {
+        return capNhatKhuyenMai(km);
+    }
+
+    public boolean xoa(String maKM) {
+        return xoaKhuyenMai(maKM);
+    }
+
+    public List<KhuyenMai> timKiem(String tuKhoa) {
+        return timTheoTuKhoa(tuKhoa);
+    }
+
     private KhuyenMai mapRow(ResultSet rs) throws SQLException {
         KhuyenMai km = new KhuyenMai();
         km.setMaKM(rs.getString("maKM"));

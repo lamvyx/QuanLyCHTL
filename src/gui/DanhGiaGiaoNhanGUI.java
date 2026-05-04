@@ -80,8 +80,8 @@ public class DanhGiaGiaoNhanGUI extends JDialog {
         btnBar.setBackground(BG);
         btnBar.setBorder(new MatteBorder(1, 0, 0, 0, new Color(226, 232, 240)));
 
-        btnLuu  = btn("💾  Lưu đánh giá", new Color(22, 163, 74));
-        btnDong = btn("✖  Đóng",          new Color(185, 28,  28));
+        btnLuu  = NhanVienUiHelper.createPrimaryButton("Lưu đánh giá");
+        btnDong = NhanVienUiHelper.createSecondaryButton("Đóng");
 
         btnLuu .addActionListener(e -> luuDanhGia());
         btnDong.addActionListener(e -> dispose());
@@ -110,7 +110,7 @@ public class DanhGiaGiaoNhanGUI extends JDialog {
         cboNCC = new JComboBox<>();
         cboNCC.setFont(FNT_PLAIN);
         cboNCC.setPreferredSize(new Dimension(180, 28));
-        btnXemPhieu = btn("Xem phiếu", BLUE);
+        btnXemPhieu = NhanVienUiHelper.createPrimaryButton("Xem phiếu");
         btnXemPhieu.addActionListener(e -> loadPhieu());
         top.add(lblNCC);
         top.add(cboNCC);

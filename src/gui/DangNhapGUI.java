@@ -46,7 +46,9 @@ public class DangNhapGUI extends JFrame {
 		this.taiKhoanDAO = new TaiKhoanDAO();
 
 		txtUsername = new JTextField();
+		txtUsername.setToolTipText("Nhập tên đăng nhập tại đây");
 		txtPassword = new JPasswordField();
+		txtPassword.setToolTipText("Nhập mật khẩu tại đây");
 
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -166,6 +168,7 @@ public class DangNhapGUI extends JFrame {
 
 	private void stylePrimaryButton(JButton button, Color background) {
 		button.setBackground(background);
+		// Luôn sử dụng chữ màu đen theo yêu cầu người dùng
 		button.setForeground(Color.BLACK);
 		button.setFont(new Font("Segoe UI", Font.BOLD, 14));
 		button.setFocusPainted(false);
@@ -199,54 +202,56 @@ public class DangNhapGUI extends JFrame {
 		String password = new String(txtPassword.getPassword());
 
 		if (username.isEmpty()) {
-			JOptionPane.showMessageDialog(
-					this,
-					"Vui lòng nhập tên đăng nhập.",
-					"Cảnh báo",
-					JOptionPane.WARNING_MESSAGE
-			);
+			JOptionPane.showMessageDialog(this, "Vui lòng nhập tên đăng nhập.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
 		if (password.isEmpty()) {
-			JOptionPane.showMessageDialog(
-					this,
-					"Vui lòng nhập mật khẩu.",
-					"Cảnh báo",
-					JOptionPane.WARNING_MESSAGE
-			);
+			JOptionPane.showMessageDialog(this, "Vui lòng nhập mật khẩu.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
-		try {
-			TaiKhoan taiKhoan = taiKhoanDAO.dangNhap(username, password);
-			if (taiKhoan == null) {
-				JOptionPane.showMessageDialog(
-						this,
-						"Sai thông tin đăng nhập hoặc tài khoản đã bị khóa.",
-						"Đăng nhập thất bại",
-						JOptionPane.ERROR_MESSAGE
-				);
-				return;
+		// Use SwingWorker to prevent UI freezing during login
+		new javax.swing.SwingWorker<TaiKhoan, Void>() {
+			@Override
+			protected TaiKhoan doInBackground() throws Exception {
+				return taiKhoanDAO.dangNhap(username, password);
 			}
 
-			JOptionPane.showMessageDialog(
-					this,
-					"Đăng nhập thành công. Xin chào " + taiKhoan.getUsername() + " (" + taiKhoan.getRole() + ")",
-					"Thành công",
-					JOptionPane.INFORMATION_MESSAGE
-			);
+			@Override
+			protected void done() {
+				try {
+					TaiKhoan taiKhoan = get();
+					if (taiKhoan == null) {
+						JOptionPane.showMessageDialog(DangNhapGUI.this, "Sai thông tin đăng nhập hoặc tài khoản đã bị khóa.", "Đăng nhập thất bại", JOptionPane.ERROR_MESSAGE);
+						return;
+					}
 
-			new HomeGUI(taiKhoan).setVisible(true);
-			dispose();
-		} catch (IllegalStateException ex) {
-			JOptionPane.showMessageDialog(
-					this,
-					"Không thể kết nối hoặc truy vấn CSDL: " + ex.getMessage(),
-					"Lỗi hệ thống",
-					JOptionPane.ERROR_MESSAGE
-			);
-		}
+					JOptionPane.showMessageDialog(DangNhapGUI.this, "Đăng nhập thành công. Xin chào " + taiKhoan.getUsername() + " (" + taiKhoan.getRole() + ")", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+
+					// Create HomeGUI in background if it takes too long
+					new javax.swing.SwingWorker<HomeGUI, Void>() {
+						@Override
+						protected HomeGUI doInBackground() throws Exception {
+							return new HomeGUI(taiKhoan);
+						}
+
+						@Override
+						protected void done() {
+							try {
+								get().setVisible(true);
+								dispose();
+							} catch (Exception e) {
+								JOptionPane.showMessageDialog(DangNhapGUI.this, "Lỗi khởi động giao diện chính: " + e.getMessage());
+							}
+						}
+					}.execute();
+
+				} catch (Exception ex) {
+					JOptionPane.showMessageDialog(DangNhapGUI.this, "Lỗi hệ thống: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		}.execute();
 	}
 
 	public void setDangNhapVisible(boolean visible) {
@@ -278,14 +283,17 @@ public class DangNhapGUI extends JFrame {
 			// Giữ giao diện mặc định nếu không dùng được giao diện của hệ điều hành.
 		}
 
-		SwingUtilities.invokeLater(() -> {
+		// Khởi chạy khởi tạo CSDL trong luồng riêng để tránh đơ UI
+		new Thread(() -> {
 			try {
 				DatabaseInitializer.ensureSchema();
 				DatabaseInitializer.loadSeedData();
-			} catch (IllegalStateException ex) {
-				JOptionPane.showMessageDialog(null, "Lỗi khởi tạo CSDL: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+			} catch (Exception ex) {
+				System.err.println("Lỗi khởi tạo CSDL: " + ex.getMessage());
 			}
+		}).start();
 
+		SwingUtilities.invokeLater(() -> {
 			DangNhapGUI dangNhapGUI = new DangNhapGUI();
 			dangNhapGUI.khoiDong(true);
 		});
