@@ -1,4 +1,5 @@
 package dao;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,7 +12,7 @@ import entity.KhachHang;
 public class KhachHangDAO {
     public List<KhachHang> timTatCa() {
         List<KhachHang> ds = new ArrayList<>();
-        try (Connection con = ConnectDB.getInstance().getConnection();
+        try (Connection con = ConnectDB.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT * FROM KhachHang");
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -29,7 +30,7 @@ public class KhachHangDAO {
 
     public KhachHang timTheoMa(String maKH) {
         if (maKH == null || maKH.trim().isEmpty()) return null;
-        try (Connection con = ConnectDB.getInstance().getConnection();
+        try (Connection con = ConnectDB.getConnection();
              PreparedStatement ps = con.prepareStatement("SELECT * FROM KhachHang WHERE maKH = ?")) {
             ps.setString(1, maKH.trim());
             try (ResultSet rs = ps.executeQuery()) {
@@ -50,7 +51,7 @@ public class KhachHangDAO {
     public List<KhachHang> timTheoTuKhoa(String tuKhoa) {
         List<KhachHang> ds = new ArrayList<>();
         String sql = "SELECT * FROM KhachHang WHERE maKH LIKE ? OR tenKH LIKE ? OR sdt LIKE ?";
-        try (Connection con = ConnectDB.getInstance().getConnection();
+        try (Connection con = ConnectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             String pattern = "%" + tuKhoa + "%";
             ps.setString(1, pattern);
@@ -73,7 +74,7 @@ public class KhachHangDAO {
 
     public boolean themKhachHang(KhachHang kh) {
         String sql = "INSERT INTO KhachHang (maKH, tenKH, sdt, diemTichLuy, loaiKH) VALUES (?, ?, ?, ?, ?)";
-        try (Connection con = ConnectDB.getInstance().getConnection();
+        try (Connection con = ConnectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, kh.getMaKH());
             ps.setString(2, kh.getTenKH());
@@ -87,7 +88,7 @@ public class KhachHangDAO {
 
     public boolean capNhatKhachHang(KhachHang kh) {
         String sql = "UPDATE KhachHang SET tenKH = ?, sdt = ?, diemTichLuy = ?, loaiKH = ? WHERE maKH = ?";
-        try (Connection con = ConnectDB.getInstance().getConnection();
+        try (Connection con = ConnectDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, kh.getTenKH());
             ps.setString(2, kh.getSdt());
@@ -100,7 +101,7 @@ public class KhachHangDAO {
     }
 
     public boolean xoaKhachHang(String maKH) {
-        try (Connection con = ConnectDB.getInstance().getConnection();
+        try (Connection con = ConnectDB.getConnection();
              PreparedStatement ps = con.prepareStatement("DELETE FROM KhachHang WHERE maKH = ?")) {
             ps.setString(1, maKH);
             return ps.executeUpdate() > 0;
@@ -109,7 +110,7 @@ public class KhachHangDAO {
     }
     
     public boolean capNhatDiem(String maKH, int diemCongThem) {
-        try (Connection con = ConnectDB.getInstance().getConnection();
+        try (Connection con = ConnectDB.getConnection();
              PreparedStatement ps = con.prepareStatement("UPDATE KhachHang SET diemTichLuy = ISNULL(diemTichLuy, 0) + ? WHERE maKH = ?")) {
             ps.setInt(1, diemCongThem);
             ps.setString(2, maKH.trim());

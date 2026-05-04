@@ -260,14 +260,58 @@ public class HomeGUI extends JFrame {
         JMenu menu = new JMenu(tenMenu);
         styleMenu(menu, BLUE);
 
-        menu.add(taoMenuItemChucNang("Thêm " + tenMenu.toLowerCase(), "Mở màn hình thêm " + tenMenu.toLowerCase()));
-        menu.add(taoMenuItemChucNang("Tra cứu " + tenMenu.toLowerCase(), "Màn hình tra cứu " + tenMenu.toLowerCase() + " - " + boLocGoiY));
-        menu.add(taoMenuItemChucNang("Cập nhật " + tenMenu.toLowerCase(), "Mở màn hình cập nhật " + tenMenu.toLowerCase()));
+        // Thêm
+        JMenuItem itemThem = new JMenuItem("Thêm " + tenMenu.toLowerCase());
+        itemThem.addActionListener(e -> {
+            switch (tenMenu) {
+                case "Khách hàng" -> new ThemKhachHangGUI(this).setVisible(true);
+                case "Khuyến mãi" -> new ThemKhuyenMaiGUI(this).setVisible(true);
+                case "Nhà cung cấp" -> new ThemNhaCungCapGUI(this).setVisible(true);
+                default -> moTrangChucNang("Thêm " + tenMenu.toLowerCase(), "Chức năng đang phát triển");
+            }
+        });
+        menu.add(itemThem);
 
+        // Tra cứu
+        JMenuItem itemTraCuu = new JMenuItem("Tra cứu " + tenMenu.toLowerCase());
+        itemTraCuu.addActionListener(e -> {
+            switch (tenMenu) {
+                case "Khách hàng" -> new TraCuuKhachHangGUI(this).setVisible(true);
+                case "Khuyến mãi" -> new TraCuuKhuyenMaiGUI(this).setVisible(true);
+                case "Nhà cung cấp" -> new TraCuuNhaCungCapGUI(this).setVisible(true);
+                default -> moTrangChucNang("Tra cứu " + tenMenu.toLowerCase(), "Chức năng đang phát triển");
+            }
+        });
+        menu.add(itemTraCuu);
+
+        // Cập nhật
+        JMenuItem itemCapNhat = new JMenuItem("Cập nhật " + tenMenu.toLowerCase());
+        itemCapNhat.addActionListener(e -> {
+            switch (tenMenu) {
+                case "Khách hàng" -> new CapNhatKhachHangGUI(this).setVisible(true);
+                case "Khuyến mãi" -> new CapNhatKhuyenMaiGUI(this).setVisible(true);
+                case "Nhà cung cấp" -> new CapNhatNhaCungCapGUI(this).setVisible(true);
+                default -> moTrangChucNang("Cập nhật " + tenMenu.toLowerCase(), "Chức năng đang phát triển");
+            }
+        });
+        menu.add(itemCapNhat);
+
+        // Các tác vụ thêm
         if (tacVuThem != null && tacVuThem.length > 0) {
             menu.addSeparator();
             for (String tacVu : tacVuThem) {
-                menu.add(taoMenuItemChucNang(tacVu, "Tác vụ " + tacVu.toLowerCase() + " cho " + tenMenu.toLowerCase()));
+                JMenuItem item = new JMenuItem(tacVu);
+                item.addActionListener(e -> {
+                    switch (tacVu) {
+                        case "Xem lịch sử mua hàng" -> new LichSuMuaHangGUI().setVisible(true);
+                        case "Cập nhật điểm tích lũy" -> new CapNhatDiemTichLuyGUI().setVisible(true);
+                        case "Kiểm tra khuyến mãi còn hiệu lực" -> new KiemTraKhuyenMaiGUI(this).setVisible(true);
+                        case "Xem phiếu nhập theo nhà cung cấp" -> new XemPhieuNhapNhaCungCapGUI(this).setVisible(true);
+                        case "Đánh giá giao nhận"               -> new DanhGiaGiaoNhanGUI(this).setVisible(true);
+                        default -> moTrangChucNang(tacVu, "Chức năng đang phát triển");
+                    }
+                });
+                menu.add(item);
             }
         }
 

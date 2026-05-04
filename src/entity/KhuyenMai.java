@@ -69,6 +69,14 @@ public class KhuyenMai {
     public void setNgayKT(LocalDate ngayKT) {
         this.ngayKT = ngayKT;
     }
+<<<<<<< HEAD
+    
+    public boolean conHieuLuc() {
+        LocalDate hom_nay = LocalDate.now();
+        return !hom_nay.isBefore(ngayBD) && !hom_nay.isAfter(ngayKT);
+    }
+=======
+>>>>>>> dcf7c0fe2cf37d3adb70b3c0f09771caa7965032
 
     @Override
     public String toString() {
