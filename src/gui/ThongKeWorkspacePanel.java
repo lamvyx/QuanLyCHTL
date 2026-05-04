@@ -26,7 +26,6 @@ import dao.ThongKeDAO;
 public class ThongKeWorkspacePanel extends JPanel {
     private static final String CARD_DOANH_THU_NGAY = "doanhThuNgay";
     private static final String CARD_DOANH_THU_THANG = "doanhThuThang";
-    private static final String CARD_TON_KHO = "tonKho";
     private static final String CARD_BAN_CHAY = "banChay";
     private static final String CARD_HOA_DON = "hoaDon";
     private static final String CARD_PHIEU_NHAP = "phieuNhap";
@@ -34,8 +33,9 @@ public class ThongKeWorkspacePanel extends JPanel {
     private final java.awt.CardLayout cardLayout = new java.awt.CardLayout();
     private final JPanel cardContainer = new JPanel(cardLayout);
     private final ThongKeDAO thongKeDAO = new ThongKeDAO();
-    private final BarChartPanel barDoanhThuThang = new BarChartPanel();
-    private final PieChartPanel pieLoaiSanPham = new PieChartPanel();
+    private final BarChartPanel barDoanhThuNgay = new BarChartPanel();
+    private final BarChartPanel barDoanhThuThangChart = new BarChartPanel();
+    private final PieChartPanel pieBanChay = new PieChartPanel();
 
     private final DefaultTableModel modelDoanhThuNgay = new DefaultTableModel(new Object[] {
             "Ngày", "Số hóa đơn", "Tổng doanh thu"
@@ -56,16 +56,6 @@ public class ThongKeWorkspacePanel extends JPanel {
         }
     };
     private final JTable tblDoanhThuThang = new JTable(modelDoanhThuThang);
-
-    private final DefaultTableModel modelTonKho = new DefaultTableModel(new Object[] {
-            "Mã SP", "Tên SP", "Loại SP", "Tồn kho", "Giá", "Hạn sử dụng"
-    }, 0) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-    };
-    private final JTable tblTonKho = new JTable(modelTonKho);
 
     private final DefaultTableModel modelBanChay = new DefaultTableModel(new Object[] {
             "Mã SP", "Tên SP", "Loại SP", "Số lượng bán", "Doanh thu"
@@ -108,58 +98,45 @@ public class ThongKeWorkspacePanel extends JPanel {
 
         JPanel center = new JPanel(new BorderLayout(10, 10));
         center.setOpaque(false);
-        center.add(taoDashboard(), BorderLayout.NORTH);
         center.add(cardContainer, BorderLayout.CENTER);
 
         body.add(center, BorderLayout.CENTER);
 
         add(body, BorderLayout.CENTER);
 
-        cardContainer.add(taoCardBaoCao("Doanh thu theo ngày", "Theo dõi doanh thu và số hóa đơn theo ngày", tblDoanhThuNgay, this::taiDoanhThuNgayAsync), CARD_DOANH_THU_NGAY);
-        cardContainer.add(taoCardBaoCao("Doanh thu theo tháng", "Tổng hợp doanh thu theo từng tháng", tblDoanhThuThang, this::taiDoanhThuThangAsync), CARD_DOANH_THU_THANG);
-        cardContainer.add(taoCardBaoCao("Tồn kho", "Danh sách sản phẩm và số lượng tồn kho", tblTonKho, this::taiTonKhoAsync), CARD_TON_KHO);
-        cardContainer.add(taoCardBaoCao("Sản phẩm bán chạy", "Top sản phẩm theo số lượng bán", tblBanChay, this::taiBanChayAsync), CARD_BAN_CHAY);
-        cardContainer.add(taoCardBaoCao("Hóa đơn bán", "Danh sách hóa đơn bán và tổng tiền", tblHoaDon, this::taiHoaDonAsync), CARD_HOA_DON);
-        cardContainer.add(taoCardBaoCao("Phiếu nhập", "Danh sách phiếu nhập và giá trị nhập", tblPhieuNhap, this::taiPhieuNhapAsync), CARD_PHIEU_NHAP);
+        cardContainer.add(taoCardBaoCao("Doanh thu theo ngày", "Theo dõi doanh thu và số hóa đơn theo ngày", tblDoanhThuNgay, barDoanhThuNgay, this::taiDoanhThuNgayAsync), CARD_DOANH_THU_NGAY);
+        cardContainer.add(taoCardBaoCao("Doanh thu theo tháng", "Tổng hợp doanh thu theo từng tháng", tblDoanhThuThang, barDoanhThuThangChart, this::taiDoanhThuThangAsync), CARD_DOANH_THU_THANG);
+        cardContainer.add(taoCardBaoCao("Sản phẩm bán chạy", "Top sản phẩm theo số lượng bán", tblBanChay, pieBanChay, this::taiBanChayAsync), CARD_BAN_CHAY);
+        cardContainer.add(taoCardBaoCao("Hóa đơn bán", "Danh sách hóa đơn bán và tổng tiền", tblHoaDon, null, this::taiHoaDonAsync), CARD_HOA_DON);
+        cardContainer.add(taoCardBaoCao("Phiếu nhập", "Danh sách phiếu nhập và giá trị nhập", tblPhieuNhap, null, this::taiPhieuNhapAsync), CARD_PHIEU_NHAP);
 
         cardLayout.show(cardContainer, CARD_DOANH_THU_NGAY);
-        taiDashboardAsync();
+        taiDoanhThuNgayAsync();
     }
 
     public void showDoanhThuNgay() {
         cardLayout.show(cardContainer, CARD_DOANH_THU_NGAY);
         taiDoanhThuNgayAsync();
-        taiDashboardAsync();
     }
 
     public void showDoanhThuThang() {
         cardLayout.show(cardContainer, CARD_DOANH_THU_THANG);
         taiDoanhThuThangAsync();
-        taiDashboardAsync();
-    }
-
-    public void showTonKho() {
-        cardLayout.show(cardContainer, CARD_TON_KHO);
-        taiTonKhoAsync();
-        taiDashboardAsync();
     }
 
     public void showSanPhamBanChay() {
         cardLayout.show(cardContainer, CARD_BAN_CHAY);
         taiBanChayAsync();
-        taiDashboardAsync();
     }
 
     public void showHoaDonBan() {
         cardLayout.show(cardContainer, CARD_HOA_DON);
         taiHoaDonAsync();
-        taiDashboardAsync();
     }
 
     public void showPhieuNhap() {
         cardLayout.show(cardContainer, CARD_PHIEU_NHAP);
         taiPhieuNhapAsync();
-        taiDashboardAsync();
     }
 
     private JPanel taoThanhTieuDe() {
@@ -179,15 +156,8 @@ public class ThongKeWorkspacePanel extends JPanel {
         return panel;
     }
 
-    private JPanel taoDashboard() {
-        JPanel dashboard = new JPanel(new GridLayout(1, 2, 10, 10));
-        dashboard.setOpaque(false);
-        dashboard.add(barDoanhThuThang);
-        dashboard.add(pieLoaiSanPham);
-        return dashboard;
-    }
 
-    private JPanel taoCardBaoCao(String tieuDe, String moTa, JTable table, Runnable reloadAction) {
+    private JPanel taoCardBaoCao(String tieuDe, String moTa, JTable table, JPanel chart, Runnable reloadAction) {
         JPanel root = new JPanel(new BorderLayout(10, 10));
         root.setBackground(NhanVienUiHelper.BG);
         root.setBorder(BorderFactory.createCompoundBorder(
@@ -214,7 +184,16 @@ public class ThongKeWorkspacePanel extends JPanel {
         top.add(btnTaiLai);
 
         root.add(top, BorderLayout.NORTH);
-        root.add(new JScrollPane(table), BorderLayout.CENTER);
+
+        JPanel contentPanel = new JPanel(new BorderLayout(0, 10));
+        contentPanel.setOpaque(false);
+        if (chart != null) {
+            chart.setPreferredSize(new java.awt.Dimension(0, 260));
+            contentPanel.add(chart, BorderLayout.NORTH);
+        }
+        contentPanel.add(new JScrollPane(table), BorderLayout.CENTER);
+
+        root.add(contentPanel, BorderLayout.CENTER);
         return root;
     }
 
@@ -227,7 +206,16 @@ public class ThongKeWorkspacePanel extends JPanel {
 
             @Override
             protected void done() {
-                napBang(modelDoanhThuNgay, this);
+                List<Object[]> rows = napBang(modelDoanhThuNgay, this);
+                List<String> labels = new ArrayList<>();
+                List<Double> values = new ArrayList<>();
+                int start = Math.max(0, rows.size() - 7);
+                for (int i = start; i < rows.size(); i++) {
+                    Object[] r = rows.get(i);
+                    labels.add(NhanVienUiHelper.formatDate((LocalDate) r[0]));
+                    values.add(toDouble(r[2]));
+                }
+                barDoanhThuNgay.setChart("Doanh thu 7 ngày gần nhất", labels, values);
             }
         }.execute();
     }
@@ -241,21 +229,14 @@ public class ThongKeWorkspacePanel extends JPanel {
 
             @Override
             protected void done() {
-                napBang(modelDoanhThuThang, this);
-            }
-        }.execute();
-    }
-
-    private void taiTonKhoAsync() {
-        new SwingWorker<List<Object[]>, Void>() {
-            @Override
-            protected List<Object[]> doInBackground() {
-                return thongKeDAO.tonKho();
-            }
-
-            @Override
-            protected void done() {
-                napBang(modelTonKho, this);
+                List<Object[]> rows = napBang(modelDoanhThuThang, this);
+                List<String> labels = new ArrayList<>();
+                List<Double> values = new ArrayList<>();
+                for (Object[] r : rows) {
+                    labels.add(String.valueOf(r[0]));
+                    values.add(toDouble(r[2]));
+                }
+                barDoanhThuThangChart.setChart("Doanh thu các tháng", labels, values);
             }
         }.execute();
     }
@@ -269,7 +250,18 @@ public class ThongKeWorkspacePanel extends JPanel {
 
             @Override
             protected void done() {
-                napBang(modelBanChay, this);
+                List<Object[]> rows = napBang(modelBanChay, this);
+                List<String> labels = new ArrayList<>();
+                List<Double> values = new ArrayList<>();
+                int limit = Math.min(6, rows.size());
+                for (int i = 0; i < limit; i++) {
+                    Object[] r = rows.get(i);
+                    String tenSP = String.valueOf(r[1]);
+                    if (tenSP.length() > 15) tenSP = tenSP.substring(0, 15) + "...";
+                    labels.add(tenSP);
+                    values.add(toDouble(r[3]));
+                }
+                pieBanChay.setChart("Top 6 sản phẩm bán nhiều nhất", labels, values);
             }
         }.execute();
     }
@@ -302,48 +294,6 @@ public class ThongKeWorkspacePanel extends JPanel {
         }.execute();
     }
 
-    private void taiDashboardAsync() {
-        new SwingWorker<Void, Void>() {
-            private List<Object[]> doanhThuThang;
-            private List<Object[]> soLuongTheoLoai;
-
-            @Override
-            protected Void doInBackground() {
-                doanhThuThang = thongKeDAO.doanhThuTheoThang();
-                soLuongTheoLoai = thongKeDAO.soLuongBanTheoLoaiSanPham();
-                return null;
-            }
-
-            @Override
-            protected void done() {
-                capNhatDashboard(doanhThuThang, soLuongTheoLoai);
-            }
-        }.execute();
-    }
-
-    private void capNhatDashboard(List<Object[]> doanhThuThang, List<Object[]> soLuongTheoLoai) {
-        List<String> labelsThang = new ArrayList<>();
-        List<Double> valuesThang = new ArrayList<>();
-        for (Object[] row : doanhThuThang) {
-            labelsThang.add(String.valueOf(row[0]));
-            valuesThang.add(toDouble(row[2]));
-        }
-        barDoanhThuThang.setChart("Doanh thu theo tháng", labelsThang, valuesThang);
-
-        Map<String, Double> tongTheoLoai = new LinkedHashMap<>();
-        for (Object[] row : soLuongTheoLoai) {
-            String loai = String.valueOf(row[0]);
-            double value = toDouble(row[1]);
-            tongTheoLoai.merge(loai, value, Double::sum);
-        }
-
-        pieLoaiSanPham.setChart(
-                "Tỷ trọng số lượng bán theo loại",
-                new ArrayList<>(tongTheoLoai.keySet()),
-                new ArrayList<>(tongTheoLoai.values())
-        );
-    }
-
     private double toDouble(Object value) {
         if (value instanceof Number number) {
             return number.doubleValue();
@@ -358,12 +308,15 @@ public class ThongKeWorkspacePanel extends JPanel {
         }
     }
 
-    private void napBang(DefaultTableModel model, SwingWorker<List<Object[]>, Void> worker) {
+    private List<Object[]> napBang(DefaultTableModel model, SwingWorker<List<Object[]>, Void> worker) {
         try {
             List<Object[]> rows = worker.get();
             model.setRowCount(0);
-            for (Object[] row : rows) {
-                model.addRow(formatRow(row));
+            if (rows != null) {
+                for (Object[] row : rows) {
+                    model.addRow(formatRow(row));
+                }
+                return rows;
             }
         } catch (java.lang.InterruptedException ex) {
             Thread.currentThread().interrupt();
@@ -371,6 +324,7 @@ public class ThongKeWorkspacePanel extends JPanel {
         } catch (java.util.concurrent.ExecutionException ex) {
             JOptionPane.showMessageDialog(this, "Không thể tải dữ liệu thống kê: " + ex.getMessage());
         }
+        return new ArrayList<>();
     }
 
     private Object[] formatRow(Object[] row) {

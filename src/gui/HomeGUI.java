@@ -169,8 +169,6 @@ public class HomeGUI extends JFrame {
             case "traCuu" -> sanPhamWorkspace.showTraCuuSanPham();
             case "capNhat" -> sanPhamWorkspace.showCapNhatSanPham();
             case "banNhanh" -> sanPhamWorkspace.showBanHangNhanh();
-            case "tonKho" -> sanPhamWorkspace.showKiemTraTonKho();
-            case "sapHetHan" -> sanPhamWorkspace.showSanPhamSapHetHan();
             default -> sanPhamWorkspace.showThemSanPham();
         }
     }
@@ -180,7 +178,6 @@ public class HomeGUI extends JFrame {
         switch (section) {
             case "doanhThuNgay" -> thongKeWorkspace.showDoanhThuNgay();
             case "doanhThuThang" -> thongKeWorkspace.showDoanhThuThang();
-            case "tonKho" -> thongKeWorkspace.showTonKho();
             case "banChay" -> thongKeWorkspace.showSanPhamBanChay();
             case "hoaDon" -> thongKeWorkspace.showHoaDonBan();
             case "phieuNhap" -> thongKeWorkspace.showPhieuNhap();
@@ -285,8 +282,6 @@ public class HomeGUI extends JFrame {
         menuSanPham.add(taoMenuItemSanPham("Cập nhật sản phẩm", e -> hienThiSanPham("capNhat")));
         menuSanPham.addSeparator();
         menuSanPham.add(taoMenuItemSanPham("Bán hàng nhanh", e -> hienThiSanPham("banNhanh")));
-        menuSanPham.add(taoMenuItemSanPham("Kiểm tra tồn kho", e -> hienThiSanPham("tonKho")));
-        menuSanPham.add(taoMenuItemSanPham("Xem sản phẩm sắp hết hạn", e -> hienThiSanPham("sapHetHan")));
         return menuSanPham;
     }
 
@@ -328,7 +323,6 @@ public class HomeGUI extends JFrame {
         styleMenu(menu, TEAL);
         menu.add(taoMenuItemThongKe("Doanh thu theo ngày", e -> hienThiThongKe("doanhThuNgay")));
         menu.add(taoMenuItemThongKe("Doanh thu theo tháng", e -> hienThiThongKe("doanhThuThang")));
-        menu.add(taoMenuItemThongKe("Tồn kho", e -> hienThiThongKe("tonKho")));
         menu.add(taoMenuItemThongKe("Sản phẩm bán chạy", e -> hienThiThongKe("banChay")));
         menu.add(taoMenuItemThongKe("Hóa đơn bán", e -> hienThiThongKe("hoaDon")));
         menu.add(taoMenuItemThongKe("Phiếu nhập", e -> hienThiThongKe("phieuNhap")));

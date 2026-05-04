@@ -155,13 +155,36 @@ public class SanPhamDAO {
             return false;
         }
 
-        try (Connection con = ConnectDB.getInstance().getConnection();
-             PreparedStatement ps = con.prepareStatement(DELETE_SQL)) {
+        Connection con = null;
+        try {
+            con = ConnectDB.getInstance().getConnection();
+            con.setAutoCommit(false);
+            
+            try (PreparedStatement psCTHD = con.prepareStatement("DELETE FROM ChiTietHoaDon WHERE maSP = ?")) {
+                psCTHD.setString(1, maSP.trim());
+                psCTHD.executeUpdate();
+            } catch (SQLException e) { /* ignore */ }
+            
+            try (PreparedStatement psCTPN = con.prepareStatement("DELETE FROM ChiTietPhieuNhap WHERE maSP = ?")) {
+                psCTPN.setString(1, maSP.trim());
+                psCTPN.executeUpdate();
+            } catch (SQLException e) { /* ignore */ }
 
-            ps.setString(1, maSP.trim());
-            return ps.executeUpdate() > 0;
+            try (PreparedStatement ps = con.prepareStatement(DELETE_SQL)) {
+                ps.setString(1, maSP.trim());
+                int rows = ps.executeUpdate();
+                con.commit();
+                return rows > 0;
+            }
         } catch (SQLException e) {
+            if (con != null) {
+                try { con.rollback(); } catch (SQLException ex) {}
+            }
             throw new IllegalStateException("Lỗi xóa sản phẩm: " + e.getMessage(), e);
+        } finally {
+            if (con != null) {
+                try { con.setAutoCommit(true); con.close(); } catch (SQLException e) {}
+            }
         }
     }
 

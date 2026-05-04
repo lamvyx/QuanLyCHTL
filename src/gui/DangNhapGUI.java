@@ -287,7 +287,7 @@ public class DangNhapGUI extends JFrame {
 			}
 
 			DangNhapGUI dangNhapGUI = new DangNhapGUI();
-			dangNhapGUI.khoiDong(false);
+			dangNhapGUI.khoiDong(true);
 		});
 	}
 }

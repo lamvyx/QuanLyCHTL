@@ -25,6 +25,9 @@ public class HoaDonDAO {
     private static final String INSERT_SQL =
             "INSERT INTO HoaDon(maHD, ngayLap, maNV, maKH, maThue, maKM) VALUES (?, ?, ?, ?, ?, ?)";
 
+    private static final String INSERT_CTHD_SQL =
+            "INSERT INTO ChiTietHoaDon(maHD, maSP, soLuong, donGia) VALUES (?, ?, ?, ?)";
+
     public List<HoaDon> timTatCa() {
         try (Connection con = ConnectDB.getInstance().getConnection();
              PreparedStatement ps = con.prepareStatement(FIND_ALL_SQL);
@@ -114,5 +117,37 @@ public class HoaDonDAO {
 
     private boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
+    }
+
+    public String taoMaHDMoi() {
+        String sql = "SELECT MAX(CAST(SUBSTRING(maHD, 3, LEN(maHD)) AS INT)) AS maxNum FROM HoaDon WHERE maHD LIKE 'HD%';";
+        try (Connection con = ConnectDB.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            int max = 0;
+            if (rs.next()) {
+                max = rs.getInt("maxNum");
+            }
+            int next = max + 1;
+            return String.format("HD%03d", next);
+        } catch (SQLException e) {
+            throw new IllegalStateException("Lỗi khi tạo mã hóa đơn mới: " + e.getMessage(), e);
+        }
+    }
+
+    public boolean themChiTietHoaDon(entity.ChiTietHoaDon cthd) {
+        if (cthd == null) return false;
+        try (Connection con = ConnectDB.getInstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(INSERT_CTHD_SQL)) {
+            ps.setString(1, cthd.getMaHD());
+            ps.setString(2, cthd.getMaSP());
+            if (cthd.getSoLuong() != null) ps.setInt(3, cthd.getSoLuong());
+            else ps.setNull(3, java.sql.Types.INTEGER);
+            if (cthd.getDonGia() != null) ps.setDouble(4, cthd.getDonGia());
+            else ps.setNull(4, java.sql.Types.FLOAT);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new IllegalStateException("Lỗi thêm chi tiết hóa đơn: " + e.getMessage(), e);
+        }
     }
 }
